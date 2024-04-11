@@ -117,7 +117,18 @@ public class ProjectConfig {
 
     @Bean
     public UserDetailsService userDetailsService(DataSource dataSource){
-        return new JdbcUserDetailsManager(dataSource);
+        //custom queries
+        String usersByUsernameQuery =
+                "select username, password, enabled from spring_security.users where username = ?";
+        String authsByUserQuery =
+                "select username, authority from spring_security.authorities where username = ?";
+        var userDetailsManager = new JdbcUserDetailsManager(dataSource);
+        userDetailsManager.setUsersByUsernameQuery(usersByUsernameQuery);
+        userDetailsManager.setAuthoritiesByUsernameQuery(authsByUserQuery);
+        return userDetailsManager;
+
+
+//        return new JdbcUserDetailsManager(dataSource);
     }
 
 
