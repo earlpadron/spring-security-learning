@@ -6,9 +6,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.List;
 
-/**
+/** CH 3.2.5 - Enforcing separation of concerns with JPA and Security
+ *
  * we use the SecurityUser class only to map the user
- * details in the system to the UserDetails contrac3t understood by Spring
+ * details in the system to the UserDetails contract understood by Spring
  * Security. To mark the fact that the SecurityUser makes no sense without a
  * User entity, we make the field final. You have to provide the user through the
  * constructor. The SecurityUser class decorates the User entity class and adds

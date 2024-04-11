@@ -114,7 +114,9 @@ public class ProjectConfig {
 //    }
 
 
-
+    /**
+     * CH 3.3 userDetailsManager allows management of users by allowing CRUD operations
+     */
     @Bean
     public UserDetailsService userDetailsService(DataSource dataSource){
         //custom queries
