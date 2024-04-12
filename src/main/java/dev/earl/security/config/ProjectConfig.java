@@ -7,14 +7,19 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.scrypt.SCryptPasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 import javax.sql.DataSource;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Configuration
 public class ProjectConfig {
@@ -43,11 +48,11 @@ public class ProjectConfig {
 //        return new InMemoryUserDetailsManager(user);
 //    }
 //
-    @Bean
-    public PasswordEncoder passwordEncoder(){
-        return NoOpPasswordEncoder.getInstance(); //NoOpPasswordEncoder is insecure and treats passwords as plain text
-        // its only use is for examples
-    }
+//    @Bean
+//    public PasswordEncoder passwordEncoder(){
+//        return NoOpPasswordEncoder.getInstance(); //NoOpPasswordEncoder is insecure and treats passwords as plain text
+//        // its only use is for examples
+//    }
 
 //    @Bean
 //    public SecurityFilterChain configure(HttpSecurity http) throws Exception {
@@ -117,21 +122,66 @@ public class ProjectConfig {
     /**
      * CH 3.3 userDetailsManager allows management of users by allowing CRUD operations
      */
+//    @Bean
+//    public UserDetailsService userDetailsService(DataSource dataSource){
+//        //custom queries
+//        String usersByUsernameQuery =
+//                "select username, password, enabled from spring_security.users where username = ?";
+//        String authsByUserQuery =
+//                "select username, authority from spring_security.authorities where username = ?";
+//        var userDetailsManager = new JdbcUserDetailsManager(dataSource);
+//        userDetailsManager.setUsersByUsernameQuery(usersByUsernameQuery);
+//        userDetailsManager.setAuthoritiesByUsernameQuery(authsByUserQuery);
+//        return userDetailsManager;
+//
+//
+////        return new JdbcUserDetailsManager(dataSource);
+//    }
+
+    /**
+     * CH 4.4 Creating an instance of DelegatingPasswordEncoder
+     *
+     * The DelegatingPasswordEncoder is just a tool that acts as a
+     * PasswordEncoder, so you can use it when you have to choose from a
+     * collection of implementations
+     *
+     * DelegatingPasswordEncoder contains references to a
+     * NoOpPasswordEncoder, a BCryptPasswordEncoder, and an
+     * SCryptPasswordEncoder, and delegates the default to the
+     * BCryptPasswordEncoder implementation. Based on the prefix of the hash,
+     * the DelegatingPasswordEncoder uses the right PasswordEncoder
+     * implementation for matching the password. This prefix has the key that
+     * identifies the password encoder to be used from the map of encoders. If there
+     * is no prefix, the DelegatingPasswordEncoder uses the default encoder. The
+     * default PasswordEncoder is the one given as the first parameter when
+     * constructing the DelegatingPasswordEncoder instance. For the code in
+     * listing 4.4, the default PasswordEncoder is bcrypt.
+     *
+     * remember that the curly braces are
+     * mandatory in the prefix. ex {bcrypt}$2a$10$xn3LI/AjqicFYZFruSwve.681477XaVNaUQbr1gioaWPn4t1KsnmG
+     *
+     *
+     * For convenience, Spring Security offers a way to create a
+     * DelegatingPasswordEncoder that has a map to all the standard provided
+     * implementations of PasswordEncoder. The PasswordEncoderFactories class
+     * provides a createDelegatingPasswordEncoder() static method that returns
+     * an implementation of DelegatingPasswordEncoder with a full set of
+     * PasswordEncoder mappings and bcrypt as a default encoder:
+     *
+     * Also learned about SSCM which has utility methods for cryptography - salt generation, encryption/decryption
+     */
     @Bean
-    public UserDetailsService userDetailsService(DataSource dataSource){
-        //custom queries
-        String usersByUsernameQuery =
-                "select username, password, enabled from spring_security.users where username = ?";
-        String authsByUserQuery =
-                "select username, authority from spring_security.authorities where username = ?";
-        var userDetailsManager = new JdbcUserDetailsManager(dataSource);
-        userDetailsManager.setUsersByUsernameQuery(usersByUsernameQuery);
-        userDetailsManager.setAuthoritiesByUsernameQuery(authsByUserQuery);
-        return userDetailsManager;
+    public PasswordEncoder passwordEncoder(){
+        Map<String, PasswordEncoder> encoders = new HashMap<>();
+        encoders.put("noop", NoOpPasswordEncoder.getInstance());
+        encoders.put("bcrypt", new BCryptPasswordEncoder());
+        encoders.put("scrypt", new SCryptPasswordEncoder(16384,8,1,32,64));
 
-
-//        return new JdbcUserDetailsManager(dataSource);
+        return new DelegatingPasswordEncoder("bcrypt", encoders);
     }
+
+
+
 
 
 }
