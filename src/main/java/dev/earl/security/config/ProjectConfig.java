@@ -12,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 import javax.sql.DataSource;
 import java.util.List;
@@ -115,20 +116,36 @@ public class ProjectConfig {
 
 
 
+//    @Bean
+//    public UserDetailsService userDetailsService(DataSource dataSource){
+//        //custom queries
+//        String usersByUsernameQuery =
+//                "select username, password, enabled from spring_security.users where username = ?";
+//        String authsByUserQuery =
+//                "select username, authority from spring_security.authorities where username = ?";
+//        var userDetailsManager = new JdbcUserDetailsManager(dataSource);
+//        userDetailsManager.setUsersByUsernameQuery(usersByUsernameQuery);
+//        userDetailsManager.setAuthoritiesByUsernameQuery(authsByUserQuery);
+//        return userDetailsManager;
+//
+//
+////        return new JdbcUserDetailsManager(dataSource);
+//    }
+
+    /**
+     * CH 5.1
+     * applying the custom filter(RequestValidationFilter) within the configuration class, we
+     * use the addFilterBefore() method of the HttpSecurity object because we
+     * want the application to execute this custom filter before authentication
+
+     */
     @Bean
-    public UserDetailsService userDetailsService(DataSource dataSource){
-        //custom queries
-        String usersByUsernameQuery =
-                "select username, password, enabled from spring_security.users where username = ?";
-        String authsByUserQuery =
-                "select username, authority from spring_security.authorities where username = ?";
-        var userDetailsManager = new JdbcUserDetailsManager(dataSource);
-        userDetailsManager.setUsersByUsernameQuery(usersByUsernameQuery);
-        userDetailsManager.setAuthoritiesByUsernameQuery(authsByUserQuery);
-        return userDetailsManager;
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http.addFilterBefore(
+                new RequestValidationFilter(), BasicAuthenticationFilter.class)
+                .authorizeHttpRequests(c -> c.anyRequest().permitAll());
 
-
-//        return new JdbcUserDetailsManager(dataSource);
+        return http.build();
     }
 
 
