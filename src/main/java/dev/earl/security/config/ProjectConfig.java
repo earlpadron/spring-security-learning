@@ -20,6 +20,13 @@ import java.util.List;
 @Configuration
 public class ProjectConfig {
 
+    //CH 5.8
+    private final StaticKeyAuthenticationFilter staticKeyAuthenticationFilter;
+
+    public ProjectConfig(StaticKeyAuthenticationFilter staticKeyAuthenticationFilter) {
+        this.staticKeyAuthenticationFilter = staticKeyAuthenticationFilter;
+    }
+
 //    private final CustomAuthenticationProvider customAuthenticationProvider;
 //
 //    public ProjectConfig(CustomAuthenticationProvider customAuthenticationProvider) {
@@ -137,12 +144,18 @@ public class ProjectConfig {
      * applying the custom filter(RequestValidationFilter) within the configuration class, we
      * use the addFilterBefore() method of the HttpSecurity object because we
      * want the application to execute this custom filter before authentication
+     *
+     * CH 5.8 addFilterAt()
 
      */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.addFilterBefore(
-                new RequestValidationFilter(), BasicAuthenticationFilter.class)
+            http
+                .addFilterAt(staticKeyAuthenticationFilter, BasicAuthenticationFilter.class)
+                .addFilterBefore(new RequestValidationFilter(),
+                        BasicAuthenticationFilter.class)
+                .addFilterAfter(new AuthenticationLoggerFilter(),
+                            BasicAuthenticationFilter.class)
                 .authorizeHttpRequests(c -> c.anyRequest().permitAll());
 
         return http.build();
