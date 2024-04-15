@@ -1,31 +1,36 @@
 package dev.earl.security.config;
 
+import dev.earl.security.config.filter.AuthenticationLoggerFilter;
+import dev.earl.security.config.filter.RequestValidationFilter;
+import dev.earl.security.config.filter.StaticKeyAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
-import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-
-import javax.sql.DataSource;
-import java.util.List;
 
 @Configuration
 public class ProjectConfig {
 
-    //CH 5.8
-    private final StaticKeyAuthenticationFilter staticKeyAuthenticationFilter;
+    //CH 6.5 - Registering AuthenticationProvider
+    //notice an interface is injected, not the CustomAuthenticationProvider
+    //Spring will know it needs to find an instance within its context and will find CustomAuthenticationProvider
+    private  final AuthenticationProvider authenticationProvider;
 
-    public ProjectConfig(StaticKeyAuthenticationFilter staticKeyAuthenticationFilter) {
-        this.staticKeyAuthenticationFilter = staticKeyAuthenticationFilter;
+    public ProjectConfig(AuthenticationProvider authenticationProvider) {
+        this.authenticationProvider = authenticationProvider;
     }
+
+    //CH 5.8
+//    private final StaticKeyAuthenticationFilter staticKeyAuthenticationFilter;
+//
+//    public ProjectConfig(StaticKeyAuthenticationFilter staticKeyAuthenticationFilter) {
+//        this.staticKeyAuthenticationFilter = staticKeyAuthenticationFilter;
+//    }
 
 //    private final CustomAuthenticationProvider customAuthenticationProvider;
 //
@@ -148,16 +153,25 @@ public class ProjectConfig {
      * CH 5.8 addFilterAt()
 
      */
+//    @Bean
+//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+//            http
+//                .addFilterAt(staticKeyAuthenticationFilter, BasicAuthenticationFilter.class)
+//                .addFilterBefore(new RequestValidationFilter(),
+//                        BasicAuthenticationFilter.class)
+//                .addFilterAfter(new AuthenticationLoggerFilter(),
+//                            BasicAuthenticationFilter.class)
+//                .authorizeHttpRequests(c -> c.anyRequest().permitAll());
+//
+//        return http.build();
+//    }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-            http
-                .addFilterAt(staticKeyAuthenticationFilter, BasicAuthenticationFilter.class)
-                .addFilterBefore(new RequestValidationFilter(),
-                        BasicAuthenticationFilter.class)
-                .addFilterAfter(new AuthenticationLoggerFilter(),
-                            BasicAuthenticationFilter.class)
-                .authorizeHttpRequests(c -> c.anyRequest().permitAll());
-
+        http
+                .httpBasic(Customizer.withDefaults())
+                .authenticationProvider(authenticationProvider)
+                .authorizeHttpRequests(c -> c.anyRequest().authenticated());
         return http.build();
     }
 

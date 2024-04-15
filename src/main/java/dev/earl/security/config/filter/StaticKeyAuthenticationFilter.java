@@ -1,4 +1,4 @@
-package dev.earl.security.config;
+package dev.earl.security.config.filter;
 
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
