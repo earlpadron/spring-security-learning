@@ -13,8 +13,8 @@
 //import org.springframework.security.web.SecurityFilterChain;
 //
 //@Configuration
-//public class ProjectConfig {
-//    public ProjectConfig(CustomAuthenticationSuccessHandler authenticationSuccessHandler, CustomAuthenticationFailureHandler authenticationFailureHandler) {
+//public class ReqMatchersProjectConfig {
+//    public ReqMatchersProjectConfig(CustomAuthenticationSuccessHandler authenticationSuccessHandler, CustomAuthenticationFailureHandler authenticationFailureHandler) {
 ////        this.authenticationSuccessHandler = authenticationSuccessHandler;
 ////        this.authenticationFailureHandler = authenticationFailureHandler;
 //    }
@@ -24,20 +24,20 @@
 //    //Spring will know it needs to find an instance within its context and will find CustomAuthenticationProvider
 ////    private  final AuthenticationProvider authenticationProvider;
 ////
-////    public ProjectConfig(AuthenticationProvider authenticationProvider) {
+////    public ReqMatchersProjectConfig(AuthenticationProvider authenticationProvider) {
 ////        this.authenticationProvider = authenticationProvider;
 ////    }
 //
 //    //CH 5.8
 ////    private final StaticKeyAuthenticationFilter staticKeyAuthenticationFilter;
 ////
-////    public ProjectConfig(StaticKeyAuthenticationFilter staticKeyAuthenticationFilter) {
+////    public ReqMatchersProjectConfig(StaticKeyAuthenticationFilter staticKeyAuthenticationFilter) {
 ////        this.staticKeyAuthenticationFilter = staticKeyAuthenticationFilter;
 ////    }
 //
 ////    private final CustomAuthenticationProvider customAuthenticationProvider;
 ////
-////    public ProjectConfig(CustomAuthenticationProvider customAuthenticationProvider) {
+////    public ReqMatchersProjectConfig(CustomAuthenticationProvider customAuthenticationProvider) {
 ////        this.customAuthenticationProvider = customAuthenticationProvider;
 ////    }
 //
