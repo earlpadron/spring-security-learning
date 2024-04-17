@@ -11,6 +11,11 @@ public class HelloController {
         return "hello";
     }
 
+    @GetMapping("/ciao")
+    public String ciao(){ return "Ciao!";}
+
+    @GetMapping("/hola")
+    public String hola(){return "Hola!";} //this endpoint will be accessible to anyone(authenticated or not)
 
 
 
