@@ -1,6 +1,7 @@
 package dev.earl.security.controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -16,6 +17,11 @@ public class HelloController {
 
     @GetMapping("/hola")
     public String hola(){return "Hola!";} //this endpoint will be accessible to anyone(authenticated or not)
+
+    @PostMapping
+    public String postHello(){
+        return "Post Hello!";
+    }
 
 
 
